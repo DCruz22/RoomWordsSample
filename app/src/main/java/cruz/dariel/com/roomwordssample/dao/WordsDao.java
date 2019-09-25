@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -28,4 +29,7 @@ public interface WordsDao {
 
     @Query("Select * from word_table LIMIT 1")
     Word[] getAnyWord();
+
+    @Update
+    void update(Word... words);
 }

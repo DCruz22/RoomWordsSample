@@ -18,9 +18,11 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.ViewHolder> 
 
     private LayoutInflater mInflater;
     private List<Word> mWordList;
+    private static ClickListener clickListener;
 
-    public WordsAdapter(@NonNull Context context) {
+    public WordsAdapter(@NonNull Context context, ClickListener listener) {
         mInflater = LayoutInflater.from(context);
+        clickListener = listener;
     }
 
     @NonNull
@@ -58,7 +60,16 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.ViewHolder> 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.wordItemView = itemView.findViewById(R.id.wordTextView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickListener.onClickListener(view, getAdapterPosition());
+                }
+            });
         }
+    }
 
+    public interface ClickListener{
+        void onClickListener(View v, int position);
     }
 }

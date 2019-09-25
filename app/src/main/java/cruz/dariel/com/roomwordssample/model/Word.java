@@ -3,21 +3,33 @@ package cruz.dariel.com.roomwordssample.model;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "word_table")
 public class Word {
 
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
     @NonNull
-    @PrimaryKey
     @ColumnInfo(name = "word")
     private String mWord;
 
+    public Word(int id, @NonNull String word) {
+        this.id = id;
+        this.mWord = word;
+    }
+
+    @Ignore
     public Word(@NonNull String word) {
         this.mWord = word;
     }
 
     public String getWord() {
         return mWord;
+    }
+    public int getId() {
+        return id;
     }
 }

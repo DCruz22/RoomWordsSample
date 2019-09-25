@@ -27,9 +27,13 @@ import cruz.dariel.com.roomwordssample.adapter.WordsAdapter;
 import cruz.dariel.com.roomwordssample.model.Word;
 import cruz.dariel.com.roomwordssample.viewmodel.WordViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WordsAdapter.ClickListener {
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
+    public static final int UPDATE_WORD_ACTIVITY_REQUEST_CODE = 2;
+
+    public static final String EXTRA_DATA_UPDATE_WORD = "extra_word_to_be_updated";
+    public static final String EXTRA_DATA_ID = "extra_data_id";
 
     private WordViewModel mWordViewModel;
     private WordsAdapter mWordsAdapter;
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         RecyclerView rv = findViewById(R.id.wordsRecyclerView);
-        mWordsAdapter = new WordsAdapter(this);
+        mWordsAdapter = new WordsAdapter(this, this);
         rv.setAdapter(mWordsAdapter);
         rv.setLayoutManager(new LinearLayoutManager(this));
 
@@ -90,6 +94,16 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
             Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
             mWordViewModel.insert(word);
+        }else if(requestCode == UPDATE_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            int id = data.getIntExtra(NewWordActivity.EXTRA_REPLY_ID, -1);
+
+            if(id != -1){
+                mWordViewModel.update(new Word(id, data.getStringExtra(NewWordActivity.EXTRA_REPLY)));
+            }else {
+                Toast.makeText(this, R.string.unable_to_update,
+                        Toast.LENGTH_LONG).show();
+            }
+
         }else {
             Toast.makeText(
                     getApplicationContext(),
@@ -121,5 +135,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClickListener(View v, int position) {
+        Word word = mWordsAdapter.getWordAtPosition(position);
+        launchUpdateWordActivity(word);
+    }
+
+    private void launchUpdateWordActivity(Word word){
+        Intent i = new Intent(MainActivity.this, NewWordActivity.class);
+        i.putExtra(EXTRA_DATA_UPDATE_WORD, word.getWord());
+        i.putExtra(EXTRA_DATA_ID, word.getId());
+        startActivityForResult(i, UPDATE_WORD_ACTIVITY_REQUEST_CODE);
     }
 }
